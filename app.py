@@ -73,7 +73,7 @@ def analyze():
 
         chart_base64 = None
         if breach_counts:
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(figsize=(6,4))
             ax.bar(breach_counts.keys(), breach_counts.values(), color='orange')
             ax.set_title('Breach Type Counts')
             ax.set_xlabel('Breach Type')
@@ -81,6 +81,7 @@ def analyze():
             ax.grid(axis='y', linestyle='--', alpha=0.7)
 
             buf = io.BytesIO()
+            plt.tight_layout()
             plt.savefig(buf, format='png')
             buf.seek(0)
             chart_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
@@ -88,7 +89,8 @@ def analyze():
         
         return jsonify({
             "breaches": breaches,
-            "charts": chart_base64})
+            "charts": f"data:image/png;base64,{chart_base64}" if chart_base64 else None
+        })
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
