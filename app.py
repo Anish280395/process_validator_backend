@@ -4,7 +4,7 @@ import pandas as pd
 import io, os
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 STANDARD_PROCESS = [
     ("Issuance of RFQ", 1),
