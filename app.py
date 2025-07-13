@@ -1,7 +1,9 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
 import pandas as pd
+import matplotlib.pyplot as plt
 import io, os
+import base64
 
 app = Flask(__name__)
 CORS(app, origins=["https://anish280395.github.io"])
@@ -56,16 +58,41 @@ def analyze():
         if "file" not in request.files:
             return jsonify({"error": "No file provided"}), 400
         file = request.files["file"]
-
         df = pd.read_csv(file)
+        
         required_cols = { "Case ID", "Activity", "Sequence", "Timestamp" }
         if not required_cols.issubset(df.columns):
             return jsonify({"error": f"CSV must contain columns: {required_cols}"}), 400
         
         breaches = analyze_breaches(df)
-        return jsonify({"breaches": breaches})
+
+        breach_counts = {}
+        for breach in breaches:
+            btype = breach["Breach Type"]
+            breach_counts[btype] = breach_counts.get(btype, 0) + 1
+
+        chart_base64 = None
+        if breach_counts:
+            fig, ax = plt.subplots()
+            ax.bar(breach_counts.keys(), breach_counts.values(), color='orange')
+            ax.set_title('Breach Type Counts')
+            ax.set_xlabel('Breach Type')
+            ax.set_ylabel('Number of Cases')
+            ax.grid(axis='y', linestyle='--', alpha=0.7)
+
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png')
+            buf.seek(0)
+            chart_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+            plt.close()
+        
+        return jsonify({
+            "breaches": breaches,
+            "charts": chart_base64})
+    
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
