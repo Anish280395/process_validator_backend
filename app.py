@@ -89,7 +89,7 @@ def analyze():
         
         return jsonify({
             "breaches": breaches,
-            "charts": f"data:image/png;base64,{chart_base64}" if chart_base64 else None
+            "chart": f"data:image/png;base64,{chart_base64}" if chart_base64 else None
         })
     
     except Exception as e:
