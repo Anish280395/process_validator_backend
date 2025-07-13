@@ -23,13 +23,13 @@ NUM_CASES = 20000
 BREACH_PERCENTAGE = 0.2   # 20% of cases will have breaches
 start_date = datetime(2025, 1, 1, 8, 0, 0)
 
-# Store all generated rows
+# Storing of all generated rows
 rows = []
 for i in range(1, NUM_CASES + 1):
     case_id = f"ORDER-{i:05d}"
     steps = STANDARD_STEPS.copy()
 
-    # Decide if this case is normal or has breaches
+    # Decision on: if this case is normal or has breaches
     is_breach = random.random() < BREACH_PERCENTAGE
 
     if is_breach:
