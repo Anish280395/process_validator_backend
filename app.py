@@ -4,7 +4,9 @@ import pandas as pd
 import io, os
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, origins=["https://anish280395.github.io"])
+
+# CORS(app, resources={r"/*": {"origins": "*"}}) # Uncomment for local testing
 
 STANDARD_PROCESS = [
     ("Issuance of RFQ", 1),
